@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  bardaak-tg:
+    image: prodoelmit/bardaak:latest
+    restart: always
+    volumes:
+      - /path/to/volume:/mnt/bardaak                   # Change value here
+    ports: []
+    environment:
+      - TELEGRAM_BOT_TOKEN=PUT_YOUR_TOKEN_HERE         # Change value here
+      - LANG=C.UTF-8
+      - DB_PATH=/mnt/bardaak/db.sqlite
+      - IMAGES_DIR=/mnt/bardaak/images
+      - ALGOLIA_APP_ID=PUT_YOUR_APP_ID_HERE            # Change value here
+      - ALGOLIA_SEARCH_KEY=PUT_YOUR_SEARCH_KEY_HERE    # Change value here
+      - ALGOLIA_WRITE_KEY=PUT_YOUR_WRITE_KEY_HERE      # Change value here
+      - ALLOWED_USER_IDS=1111111,2222222               # Change value here (comma-separated list of ids)
+      - STORE_BUTTON_TITLE=IKEA
+      - STORE_BUTTON_URL=https://www.ikea.com.cy/apotelesmata-anazitisis/?query={{article}}
+      - STORE_ARTICLE_REGEX=\\d{3}\\.\\d{3}\\.\\d{2}
+      - INDEX_NAME=items
