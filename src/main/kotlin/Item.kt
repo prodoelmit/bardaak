@@ -9,5 +9,34 @@ data class Item(
     var filename: String? = null
 ) {
     val imageFile: File?
-        get() = filename?.let {Images.resolve(it)}?.toFile()
+        get() = filename?.let { Images.resolve(it) }?.toFile()
+
+    val markdownSafeName: String? get() = name?.escapeForMarkdown()
+
+}
+
+/* In all other places characters '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' must be escaped with the preceding character '\'.
+ */
+fun String.escapeForMarkdown(): String {
+    val charactersToEscape = listOf(
+        '_',
+        '*',
+        '[',
+        ']',
+        '(',
+        ')',
+        '~',
+        '`',
+        '>',
+        '#',
+        '+',
+        '-',
+        '=',
+        '|',
+        '{',
+        '}',
+        '.',
+    )
+
+    return this.map { c ->  if (c in charactersToEscape) "\\$c" else c }.joinToString(separator = "")
 }

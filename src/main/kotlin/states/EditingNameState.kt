@@ -3,12 +3,18 @@ package org.prodoelmit.states
 import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.escapeForMarkdown
+import org.prodoelmit.sendMarkdown
 
 class EditingNameState(val itemId: Int): IState {
     override fun onEnter(userId: Long) {
         this.userId = userId
         val item = Items.getItem(itemId)!!
-        bot.sendMessage(userId, "Choose a new name. Old name was: \n${item.name}")
+        val text = buildString {
+            appendLine("Choose a new name. Old name was:".escapeForMarkdown())
+            appendLine(item.markdownSafeName)
+        }
+        sendMarkdown(userId, text)
     }
 
     var userId: Long? = null

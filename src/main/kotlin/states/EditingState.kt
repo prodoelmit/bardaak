@@ -5,6 +5,8 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup
 import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.escapeForMarkdown
+import org.prodoelmit.sendMarkdown
 
 class EditingState(val itemId: Int): IState {
     override fun onEnter(userId: Long) {
@@ -18,9 +20,13 @@ class EditingState(val itemId: Int): IState {
             InlineKeyboardButton(text = "Photo", callbackData = "editPhoto#${item.id}"),
         )
 
-        bot.sendMessage(userId, "What would you like to edit?", {
-            replyMarkup(keyboard)
-        })
+
+        val text = buildString {
+            append("You're editing ".escapeForMarkdown())
+            append("*${item.markdownSafeName}*")
+            append(". What would you like to edit?".escapeForMarkdown())
+        }
+        sendMarkdown(userId, text, keyboard)
     }
     override fun onLeave(userId: Long) {
     }

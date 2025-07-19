@@ -4,6 +4,9 @@ import com.pengrad.telegrambot.model.request.ParseMode
 import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.bullet
+import org.prodoelmit.escapeForMarkdown
+import org.prodoelmit.sendMarkdown
 
 class EditingLocationState(val itemId: Int): IState {
     override fun onEnter(userId: Long) {
@@ -12,12 +15,16 @@ class EditingLocationState(val itemId: Int): IState {
         val oldLocation = item.location?.let { locationItemId ->
             val locationItem = Items.getItem(locationItemId)
             locationItem?.let {
-                "(${it.id}) ${it.name}"
+                "(${it.id}) ${it.name}".escapeForMarkdown()
             } ?: "undefined"
         }
-        bot.sendMessage(userId, "Choose a new location id. Old location was:\n*$oldLocation*", {
-            parseMode(ParseMode.Markdown)
-        })
+
+        val text = buildString {
+            appendLine("Choose a new location id. Old location was:".escapeForMarkdown())
+            appendLine("*$oldLocation*")
+        }
+
+        sendMarkdown(userId, text)
     }
 
     var userId: Long? = null
@@ -27,7 +34,7 @@ class EditingLocationState(val itemId: Int): IState {
         val item = Items.getItem(itemId)!!
 
         val locationId = locationText.trim().toIntOrNull() ?: run {
-            bot.sendMessage(userId!!, "Incorrect location ID. Please enter a valid ID consisting only of digits. Use 0 if you want to clear location")
+            sendMarkdown(userId!!, "Incorrect location ID. Please enter a valid ID consisting only of digits. Use 0 if you want to clear location")
             return
         }
 
@@ -37,7 +44,7 @@ class EditingLocationState(val itemId: Int): IState {
             Items.updateItem(item)
         } else {
             val locationItem = Items.getItem(locationId) ?: run {
-                bot.sendMessage(userId!!, "There is no location with this ID. Please enter an existing ID")
+                sendMarkdown(userId!!, "There is no location with this ID. Please enter an existing ID")
                 return
             }
 

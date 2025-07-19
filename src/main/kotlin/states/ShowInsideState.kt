@@ -4,6 +4,9 @@ import com.pengrad.telegrambot.model.request.ParseMode
 import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.bullet
+import org.prodoelmit.escapeForMarkdown
+import org.prodoelmit.sendMarkdown
 
 class ShowInsideState(val itemId: Int) : IState {
 
@@ -13,27 +16,24 @@ class ShowInsideState(val itemId: Int) : IState {
         val itemsInside = Items.getItemsInLocation(itemId)
 
         if (itemsInside.isEmpty()) {
-            bot.sendMessage(userId, "Nothing inside of (${item.id}) - ${item.name}", { parseMode(ParseMode.Markdown) })
+            val idInParens = "(${item.id})".escapeForMarkdown()
+
+            sendMarkdown(userId, "Nothing inside of $idInParens - ${item.markdownSafeName}")
             States.restart(userId)
             return
         }
 
         val text = buildString {
-            appendLine("Inside of (${item.id}) - ${item.name}:")
+            appendLine("Inside of (${item.id}) - ${item.name}:".escapeForMarkdown())
             appendLine()
             itemsInside.forEach {
-                appendLine("*${it.name}* (/show\\_${it.id})")
+                val linkInParens = "(/show_${it.id})".escapeForMarkdown()
+                appendLine("$bullet ${it.markdownSafeName} $linkInParens")
             }
         }
 
-        val result = bot.sendMessage(
-            userId,
-            text,
-            {
-                parseMode(ParseMode.Markdown)
-            }
-        )
-        println(result)
+        sendMarkdown(userId, text)
+
     }
 
     override fun onLeave(userId: Long) {

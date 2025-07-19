@@ -9,6 +9,9 @@ import org.prodoelmit.Environment
 import org.prodoelmit.Item
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.escapeForMarkdown
+import org.prodoelmit.sendMarkdown
+import org.prodoelmit.sendPhoto
 import kotlin.collections.isNotEmpty
 
 class ShowItemState(val item: Item, val reason: Reason = Reason.None) : IState {
@@ -28,27 +31,9 @@ class ShowItemState(val item: Item, val reason: Reason = Reason.None) : IState {
 
 
         if (item.filename != null) {
-            SendPhoto(userId, item.imageFile)
-                .caption(
-                    text
-                )
-                .parseMode(ParseMode.Markdown)
-                .showCaptionAboveMedia(false)
-                .replyMarkup(keyboard)
-                .apply {
-                    val result = bot.execute(this)
-                    println(result)
-                }
+            sendPhoto(userId, text, item.imageFile!!, keyboard)
         } else {
-            val result = bot.sendMessage(
-                userId,
-                text,
-                {
-                    replyMarkup(keyboard)
-                    parseMode(ParseMode.Markdown)
-                }
-            )
-            println(result)
+            sendMarkdown(userId, text)
         }
     }
 
@@ -64,7 +49,10 @@ class ShowItemState(val item: Item, val reason: Reason = Reason.None) : IState {
     private fun makeText(): String {
         val locationString = item.location?.let { locationItemId ->
             val locationItem = Items.getItem(locationItemId)
-            locationItem?.let { "${it.name} (/show\\_${it.id})" }
+            locationItem?.let {
+                val linkInParens = "(/show_${it.id})".escapeForMarkdown()
+                "${it.markdownSafeName} $linkInParens"
+            }
         } ?: "Unknown"
 
         val firstLine = when (reason) {
@@ -79,11 +67,13 @@ class ShowItemState(val item: Item, val reason: Reason = Reason.None) : IState {
                 appendLine(firstLine)
             }
 
-            appendLine("*Id*: ${item.id} (/show\\_${item.id})")
-            appendLine("*Name*: ${item.name}")
+            val linkInParens = "(/show_${item.id})".escapeForMarkdown()
+            appendLine("*Id*: ${item.id} $linkInParens")
+            appendLine("*Name*: ${item.markdownSafeName}")
             appendLine("*Location*: ${locationString}")
             if (itemsInside.isNotEmpty()) {
-                appendLine("*Items inside*: ${itemsInside.count()} (/inside\\_${item.id})")
+                val insideLinkInParens = "(/inside_${item.id})".escapeForMarkdown()
+                appendLine("*Items inside*: ${itemsInside.count()} $insideLinkInParens")
             }
         }
         return text

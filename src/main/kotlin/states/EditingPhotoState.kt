@@ -5,12 +5,13 @@ import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
 import org.prodoelmit.Images
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.sendMarkdown
 
 class EditingPhotoState(val itemId: Int): IState {
     override fun onEnter(userId: Long) {
         this.userId = userId
         val item = Items.getItem(itemId)!!
-        bot.sendMessage(userId, "Send me a new picture")
+        sendMarkdown(userId, "Send me a new picture")
     }
 
     var userId: Long? = null
@@ -26,7 +27,7 @@ class EditingPhotoState(val itemId: Int): IState {
     }
 
     fun onIncorrectType() {
-        bot.sendMessage(userId!!, "Please send me an image")
+        sendMarkdown(userId!!, "Please send me an image")
     }
 
     override fun onLeave(userId: Long) {

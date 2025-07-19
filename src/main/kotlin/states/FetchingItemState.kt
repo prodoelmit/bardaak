@@ -3,6 +3,7 @@ package org.prodoelmit.states
 import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
 import org.prodoelmit.Items
 import org.prodoelmit.bot
+import org.prodoelmit.sendMarkdown
 
 class FetchingItemState(val idString: String): IState {
     override fun onEnter(userId: Long) {
@@ -10,7 +11,7 @@ class FetchingItemState(val idString: String): IState {
         val item = Items.getItem(itemId)
 
         if (item == null) {
-            bot.sendMessage(userId, "Item with id $itemId not found")
+            sendMarkdown(userId, "Item with id $itemId not found")
             States.restart(userId)
             return
         }
