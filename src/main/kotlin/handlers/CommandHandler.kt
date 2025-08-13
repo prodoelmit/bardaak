@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.MessageEntity
 import com.pengrad.telegrambot.model.Update
 import org.prodoelmit.allowedUserIds
 import org.prodoelmit.states.FetchingItemState
+import org.prodoelmit.states.ShowAllParentsState
 import org.prodoelmit.states.ShowInsideState
 import org.prodoelmit.states.States
 import org.prodoelmit.states.restart
@@ -29,6 +30,9 @@ object CommandHandler : IUpdateHandler {
             "inside" -> {
                 checkNotNull(itemId)
                 States.setState(update.userId(), ShowInsideState(itemId.toInt()))
+            }
+            "allparents" -> {
+                States.setState(update.userId(), ShowAllParentsState())
             }
         }
     }

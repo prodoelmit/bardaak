@@ -13,7 +13,7 @@ import org.prodoelmit.states.FetchingItemState
 import org.prodoelmit.states.ShowItemState
 import org.prodoelmit.states.StartState
 import org.prodoelmit.states.States
-import org.prodoelmit.states.states.SearchState
+import org.prodoelmit.states.SearchState
 import org.prodoelmit.userId
 
 object MessageHandler: IUpdateHandler {

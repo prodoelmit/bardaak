@@ -164,14 +164,23 @@ object Items {
     fun getItemsInLocation(locationId: Int): List<Item> {
         return transaction {
             addLogger(StdOutSqlLogger)
-            ItemEntity.find { ItemsTable.location eq locationId }.map { entity ->
-                Item(
-                    id = entity.id.value,
-                    name = entity.name,
-                    location = entity.location,
-                    filename = entity.filename
-                )
-            }
+            ItemEntity.find { ItemsTable.location eq locationId }.map(entityToItem)
+        }
+    }
+
+    private val entityToItem: (ItemEntity) -> Item = { entity ->
+        Item(
+            id = entity.id.value,
+            name = entity.name,
+            location = entity.location,
+            filename = entity.filename
+        )
+    }
+
+    fun getItemsWithoutParent(): List<Item> {
+        return transaction {
+            addLogger(StdOutSqlLogger)
+            ItemEntity.find {ItemsTable.location.isNull()}.map(entityToItem)
         }
     }
 }

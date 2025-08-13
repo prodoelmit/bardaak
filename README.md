@@ -59,6 +59,10 @@ This behavior is customizable via `STORE_BUTTON_TITLE`, `STORE_BUTTON_URL`, `STO
 
 ![Ikea integration](docs/imgs/ikea_link.jpg)
 
+### All items without parents
+
+There is `/allparents` command you can use to list every item that doesn't have parents
+
 
 ## Installation
 
