@@ -3,6 +3,7 @@ package org.prodoelmit.states
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup
 import com.pengrad.telegrambot.utility.kotlin.extension.request.sendMessage
+import org.prodoelmit.DELETED_PREFIX
 import org.prodoelmit.Items
 import org.prodoelmit.bot
 import org.prodoelmit.escapeForMarkdown
@@ -19,8 +20,15 @@ class EditingState(val itemId: Int): IState {
             InlineKeyboardButton(text = "Location", callbackData = "editLocation#${item.id}"),
             InlineKeyboardButton(text = "Photo", callbackData = "editPhoto#${item.id}"),
         )
-
-
+        if (item.name != null) {
+            keyboard.addRow(
+                if (!item.name!!.startsWith(DELETED_PREFIX)) {
+                    InlineKeyboardButton(text = "Mark deleted", callbackData = "delete#${item.id}")
+                } else {
+                    InlineKeyboardButton(text = "Unmark deleted", callbackData = "undelete#${item.id}")
+                }
+            )
+        }
         val text = buildString {
             append("You're editing ".escapeForMarkdown())
             append("*${item.markdownSafeName}*")

@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.utility.kotlin.extension.request.removeInlineKeyb
 import org.prodoelmit.Items
 import org.prodoelmit.allowedUserIds
 import org.prodoelmit.bot
+import org.prodoelmit.states.DeleteItemState
 import org.prodoelmit.states.EditingLocationState
 import org.prodoelmit.states.EditingNameState
 import org.prodoelmit.states.EditingPhotoState
@@ -12,6 +13,7 @@ import org.prodoelmit.states.FetchingItemState
 import org.prodoelmit.states.States
 import org.prodoelmit.states.EditingState
 import org.prodoelmit.states.ShowInsideState
+import org.prodoelmit.states.UndeleteItemState
 
 object CallbackQueryHandler : IUpdateHandler {
     override fun handleUpdate(update: Update) {
@@ -55,6 +57,14 @@ object CallbackQueryHandler : IUpdateHandler {
             "showInside" -> {
                 checkNotNull(itemId)
                 States.setState(userId, ShowInsideState(itemId))
+            }
+            "delete" -> {
+                checkNotNull(itemId)
+                States.setState(userId, DeleteItemState(itemId))
+            }
+            "undelete" -> {
+                checkNotNull(itemId)
+                States.setState(userId, UndeleteItemState(itemId))
             }
         }
     }

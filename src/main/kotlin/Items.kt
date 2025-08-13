@@ -8,8 +8,12 @@ import com.algolia.model.search.SearchResponse
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.jetbrains.exposed.v1.core.Expression
 import org.jetbrains.exposed.v1.core.Index
+import org.jetbrains.exposed.v1.core.Op
+import org.jetbrains.exposed.v1.core.SqlExpressionBuilder
 import org.jetbrains.exposed.v1.core.StdOutSqlLogger
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.prodoelmit.Environment
 import org.prodoelmit.Item
@@ -54,7 +58,9 @@ object Items {
 
                 val results = responses.results as List<SearchResponse<Hit>>
                 val ids = results.flatMap { it.hits.map { hit -> hit.additionalProperties["id"] as Int} }
-                Items.getItems(ids)
+                Items.getItems(ids).filter {
+                    item -> item.name?.startsWith(DELETED_PREFIX) == false
+                }
             } catch (e: Exception) {
                 println("Search failed: ${e.message}")
                 emptyList()
@@ -161,10 +167,14 @@ object Items {
         }
     }
 
+    val notDeletedExpr: SqlExpressionBuilder.() -> Op<Boolean> = {
+        ItemsTable.name.notLike("not_deleted")
+    }
+
     fun getItemsInLocation(locationId: Int): List<Item> {
         return transaction {
             addLogger(StdOutSqlLogger)
-            ItemEntity.find { ItemsTable.location eq locationId }.map(entityToItem)
+            ItemEntity.find { ItemsTable.location eq locationId and notDeletedExpr() }.map(entityToItem)
         }
     }
 
@@ -180,7 +190,7 @@ object Items {
     fun getItemsWithoutParent(): List<Item> {
         return transaction {
             addLogger(StdOutSqlLogger)
-            ItemEntity.find {ItemsTable.location.isNull()}.map(entityToItem)
+            ItemEntity.find {ItemsTable.location.isNull() and notDeletedExpr()}.map(entityToItem)
         }
     }
 }

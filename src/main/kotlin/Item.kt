@@ -39,4 +39,7 @@ fun String.escapeForMarkdown(): String {
     )
 
     return this.map { c ->  if (c in charactersToEscape) "\\$c" else c }.joinToString(separator = "")
+
 }
+
+val DELETED_PREFIX = "[D] "
